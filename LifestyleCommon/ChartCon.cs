@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace LifestyleCommon
 {
-    public class MySQL
+    public class ChartCon
     {
-        public MySQL(string sDB, int nPort, string sUser, string sPwd)
-        {
+        public ChartCon()
+        {// not completed yet
 
+        }
+
+        public bool Connect()
+        {
+            return true;
         }
     }
 }

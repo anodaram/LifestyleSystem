@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
-namespace LifestyleCommon
+namespace LifestyleTrader
 {
-    public class MySQL
+    class Strategy
     {
-        public MySQL(string sDB, int nPort, string sUser, string sPwd)
+        public Strategy(JObject jStrategy)
         {
 
         }

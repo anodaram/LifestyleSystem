@@ -15,9 +15,10 @@ namespace LifestyleTrader
         public Form1()
         {
             InitializeComponent();
-            foreach (var pattern in (RUN_MODE[])Enum.GetValues(typeof(RUN_MODE)))
+            foreach (var eMode in (RUN_MODE[])Enum.GetValues(typeof(RUN_MODE)))
             {
-                cmb_mode.Items.Add(pattern.ToString());
+                if (eMode == RUN_MODE.NONE) continue;
+                cmb_mode.Items.Add(eMode.ToString());
             }
             Manager.Init(this);
         }
@@ -39,7 +40,12 @@ namespace LifestyleTrader
 
         private void btn_chart_Click(object sender, EventArgs e)
         {
-            Manager.ConnectChart();
+            bool bRlt = Manager.ConnectChart();
+            Manager.PutLog("Connect Chart " + (bRlt ? "Success" : "Failed"));
+            if (bRlt)
+            {
+                btn_chart.Enabled = false;
+            }
         }
 
         private void btn_clear_Click(object sender, EventArgs e)
@@ -60,9 +66,9 @@ namespace LifestyleTrader
                 txt_log.Invoke((MethodInvoker)delegate
                 {
                     txt_log.Text += sLog + "\r\n";
-                    if (txt_log.Text.Length > Global.MAX_LOG_DISPLAY_LENGTH)
+                    if (txt_log.Text.Length > TraderGlobal.MAX_LOG_DISPLAY_LENGTH)
                     {
-                        txt_log.Text = txt_log.Text.Substring(Global.MAX_LOG_DISPLAY_LENGTH / 2);
+                        txt_log.Text = txt_log.Text.Substring(TraderGlobal.MAX_LOG_DISPLAY_LENGTH / 2);
                     }
                     txt_log.SelectionStart = txt_log.Text.Length;
                     txt_log.ScrollToCaret();
