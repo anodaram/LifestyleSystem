@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+// created by anodaram 2021-07-19
 namespace LifestyleTrader
 {
     static class Program
