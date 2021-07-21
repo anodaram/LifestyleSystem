@@ -62,6 +62,15 @@ namespace LifestyleCommon
                 m_lstSymbol.Add(symbol);
             }
         }
+
+        public Symbol FindSymbol(string sSymbol)
+        {
+            foreach (var symbol in m_lstSymbol)
+            {
+                if (symbol.m_sSymbol == sSymbol) return symbol;
+            }
+            return null;
+        }
     }
 
     public class Symbol

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LifestyleCommon;
+using System.Threading;
 using System.IO;
+using LifestyleCommon;
 
 namespace LifestyleTrader
 {
@@ -19,6 +20,9 @@ namespace LifestyleTrader
         public static TradeHistory g_tradeHistory = new TradeHistory();
         public static RUN_MODE g_eMode = RUN_MODE.NONE;
         public static MySQL g_database = null;
+        private static Thread g_mainThread = null;
+        private static bool g_bRunning = false;
+        private static DateTime g_dtLastDisplayState = new DateTime();
 
         public static void Init(Form1 form)
         {
@@ -60,27 +64,47 @@ namespace LifestyleTrader
                 PutLog("Database init success");
             }
             PutLog(string.Format("Start({0},{1},{2},{3})", eMode, sSymbol, dtStart, dtEnd));
+            Symbol symbol = g_symbolConfig.FindSymbol(sSymbol);
+            if (symbol == null)
+            {
+                PutLog("Can't find such symbol");
+                return;
+            }
 
-            g_strategy = new Strategy(Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Global.STRATEGY_CONFIG)));
+            g_strategy = new Strategy(symbol, Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Global.STRATEGY_CONFIG)));
 
-            if (eMode == RUN_MODE.BACKTEST)
+            (g_mainThread = new Thread(() =>
             {
-                runBacktest(dtStart, dtEnd);
-            }
-            else if (eMode == RUN_MODE.REAL_TRADE)
-            {
-                runRealTrade();
-            }
-            else if (eMode == RUN_MODE.MERGE_MODE)
-            {
-                runBacktest(dtStart, dtEnd);
-                runRealTrade();
-            }
+                g_bRunning = true;
+                if (eMode == RUN_MODE.BACKTEST)
+                {
+                    runBacktest(dtStart, dtEnd);
+                }
+                else if (eMode == RUN_MODE.REAL_TRADE)
+                {
+                    runRealTrade();
+                }
+                else if (eMode == RUN_MODE.MERGE_MODE)
+                {
+                    runBacktest(dtStart, dtEnd);
+                    runRealTrade();
+                }
+            })).Start();
         }
 
         public static void Stop()
         {
             g_eMode = RUN_MODE.NONE;
+            if (g_mainThread != null)
+            {
+                g_bRunning = false;
+                Thread.Sleep(1000);
+                try
+                {
+                    g_mainThread.Abort();
+                }
+                catch { }
+            }
         }
 
         public static bool ConnectChart()
@@ -90,12 +114,24 @@ namespace LifestyleTrader
 
         private static void runBacktest(DateTime dtStart, DateTime dtEnd)
         {
+            var lstOhlc = g_database.Get(g_strategy.SymbolEx(), dtStart, dtEnd);
+            int nTot = lstOhlc.Count;
+            int nCur = 0;
+            foreach (var ohlc in lstOhlc)
+            {
+                if (!g_bRunning) break;
+                g_strategy.PushOhlc(ohlc);
 
+                nCur++;
+            }
         }
 
         private static void runRealTrade()
         {
-
+            while (g_bRunning)
+            {
+                Thread.Sleep(100);
+            }
         }
     }
 }

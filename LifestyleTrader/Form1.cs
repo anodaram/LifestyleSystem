@@ -20,22 +20,27 @@ namespace LifestyleTrader
                 if (eMode == RUN_MODE.NONE) continue;
                 cmb_mode.Items.Add(eMode.ToString());
             }
+            btn_stop.Enabled = false;
             Manager.Init(this);
         }
 
         private void btn_start_Click(object sender, EventArgs e)
         {
+            btn_start.Enabled = false;
             string sRunMode = cmb_mode.Text;
             string sSymbol = cmb_symbol.Text;
             if (sRunMode.Length < 1) DisplayState("Please select MODE");
             else if (sSymbol.Length < 1) DisplayState("Please select symbol");
             else Manager.Start((RUN_MODE)Enum.Parse(typeof(RUN_MODE), sRunMode, true),
                 sSymbol, dtpicker_st.Value, dtpicker_en.Value);
+            btn_stop.Enabled = true;
         }
 
         private void btn_stop_Click(object sender, EventArgs e)
         {
+            btn_stop.Enabled = false;
             Manager.Stop();
+            btn_start.Enabled = true;
         }
 
         private void btn_chart_Click(object sender, EventArgs e)

@@ -12,5 +12,10 @@ namespace LifestyleCommon
         {
 
         }
+
+        public List<Ohlc> Get(string sSymbol, DateTime dtStart, DateTime dtEnd)
+        {
+            return null;
+        }
     }
 }
