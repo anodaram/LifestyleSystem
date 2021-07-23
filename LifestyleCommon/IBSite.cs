@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LifestyleCommon
 {
-    class IBSite
+    public class IBSite
     {
         public void Init()
         {

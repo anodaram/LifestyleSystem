@@ -22,5 +22,25 @@ namespace LifestyleTrader
         public void PushOhlc(Ohlc ohlc)
         {
         }
+
+        public Ohlc GetOhlc(string sTF, int nShift = 0)
+        {
+            return null;
+        }
+
+        public List<string> TFList()
+        {
+            return null;
+        }
+
+        public int OhlcCount(string sTF)
+        {
+            return 0;
+        }
+
+        public DateTime GetTime()
+        {
+            return DateTime.Now;
+        }
     }
 }

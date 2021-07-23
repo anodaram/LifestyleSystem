@@ -43,6 +43,8 @@ namespace LifestyleCommon
     {
         NONE = 0,
         BUY = 1,
-        SELL = 2
+        SELL = 2,
+        BUYCLOSE = 3,
+        SELLCLOSE = 4
     }
 }

@@ -20,6 +20,7 @@ namespace LifestyleTrader
         public static TradeHistory g_tradeHistory = new TradeHistory();
         public static RUN_MODE g_eMode = RUN_MODE.NONE;
         public static MySQL g_database = null;
+        private static IBSite g_broker = null;
         private static Thread g_mainThread = null;
         private static bool g_bRunning = false;
         private static DateTime g_dtLastDisplayState = new DateTime();
@@ -121,7 +122,7 @@ namespace LifestyleTrader
             {
                 if (!g_bRunning) break;
                 g_strategy.PushOhlc(ohlc);
-
+                g_strategy.OnTick();
                 nCur++;
             }
         }
@@ -130,6 +131,8 @@ namespace LifestyleTrader
         {
             while (g_bRunning)
             {
+                Tick tick = g_broker.GetRate(g_strategy.symbol());
+                g_strategy.PushTick(tick);
                 Thread.Sleep(100);
             }
         }
