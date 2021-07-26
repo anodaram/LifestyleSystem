@@ -16,6 +16,9 @@ namespace LifestyleCommon
         public static string MAIN_CONFIG = Directory.GetCurrentDirectory() + "\\config\\main.json";
         public static string SYMBOL_CONFIG = Directory.GetCurrentDirectory() + "\\config\\symbols.json";
         public static string STRATEGY_CONFIG = Directory.GetCurrentDirectory() + "\\config\\strategy.json";
+
+        // constants
+        public const double EPS = 1e-5;
     }
 
     public class Ohlc

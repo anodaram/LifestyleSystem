@@ -16,6 +16,9 @@ namespace LifestyleTrader
         private double m_dDefaultRate = 0;
         private Dictionary<Tuple<string, string>, bool> m_dicStates = new Dictionary<Tuple<string, string>, bool>();
         private List<ORDER_COMMAND> m_lstSignal = new List<ORDER_COMMAND>();
+        private JArray m_jStateFormula = null;
+        private double ex_dLots = 1.0;
+        private Evaluation m_evaluation = new Evaluation();
 
         public Strategy(Symbol symbol, JObject jStrategy)
         {
@@ -49,8 +52,28 @@ namespace LifestyleTrader
         {
             initState();
             calcPattern();
-            //calcState_dfs();
+            calcState_dfs(m_jStateFormula);
 
+            ORDER_COMMAND cmd = openedCmd();
+            double dLots = ex_dLots;
+            double dPrice = 0;
+
+            if (cmd == ORDER_COMMAND.NONE && m_lstSignal.Contains(ORDER_COMMAND.BUY))
+            {
+                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+            }
+            else if (cmd == ORDER_COMMAND.NONE && m_lstSignal.Contains(ORDER_COMMAND.SELL))
+            {
+                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+            }
+            else if (cmd == ORDER_COMMAND.BUY && m_lstSignal.Contains(ORDER_COMMAND.BUYCLOSE))
+            {
+                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+            }
+            else if (cmd == ORDER_COMMAND.SELL && m_lstSignal.Contains(ORDER_COMMAND.SELLCLOSE))
+            {
+                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+            }
         }
 
         private void calcPattern()
@@ -183,6 +206,7 @@ namespace LifestyleTrader
 
         private void calcState_dfs(JArray j)
         {
+            if (j == null) return;
             foreach (var jChild in j)
             {
                 bool bFlag = true;
@@ -251,7 +275,7 @@ namespace LifestyleTrader
 
         private void setOrder(string sCmd)
         {
-
+            m_lstSignal.Add((ORDER_COMMAND)Enum.Parse(typeof(ORDER_COMMAND), sCmd));
         }
 
         private bool checkState(string sKey, string sValue)
@@ -289,6 +313,34 @@ namespace LifestyleTrader
             }
             catch { return 0; }
             return 0;
+        }
+
+        private ORDER_COMMAND openedCmd()
+        {
+            double dLots = getLots(m_symbol);
+            if (dLots > Global.EPS) return ORDER_COMMAND.BUY;
+            if (dLots < -Global.EPS) return ORDER_COMMAND.SELL;
+            return ORDER_COMMAND.NONE;
+        }
+
+        private double getLots(Symbol symbol)
+        {
+            if (Manager.g_eMode == RUN_MODE.BACKTEST)
+            {
+                return m_evaluation.Lots();
+            }
+            return Manager.g_broker.GetLots(symbol);
+        }
+
+        private bool requestOrder(ORDER_COMMAND cmd, Symbol symbol, ref double dLots, ref double dPrice)
+        {
+            bool bRlt = true;
+            if (Manager.g_eMode == RUN_MODE.REAL_TRADE)
+            {
+                bRlt = Manager.g_broker.RequestOrder(cmd, symbol, ref dLots, ref dPrice);
+            }
+            m_evaluation.RequestOrder(cmd, dLots, dPrice);
+            return bRlt;
         }
     }
 }

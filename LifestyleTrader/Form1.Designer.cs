@@ -45,6 +45,27 @@
             this.dtpicker_en = new System.Windows.Forms.DateTimePicker();
             this.label6 = new System.Windows.Forms.Label();
             this.cmb_symbol = new System.Windows.Forms.ComboBox();
+            this.btn_eval = new System.Windows.Forms.Button();
+            this.panel_eval = new System.Windows.Forms.Panel();
+            this.listView_his = new System.Windows.Forms.ListView();
+            this.listView_eval = new System.Windows.Forms.ListView();
+            this.listView_pos = new System.Windows.Forms.ListView();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.col_Symbol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_Cmd = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_Lots = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_OpenPrice = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_OpenTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_symbol_ = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_command_ = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_lots_ = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_price_ = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_time_ = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_value = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.panel_eval.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_start
@@ -196,11 +217,162 @@
             this.cmb_symbol.Size = new System.Drawing.Size(102, 21);
             this.cmb_symbol.TabIndex = 16;
             // 
+            // btn_eval
+            // 
+            this.btn_eval.Location = new System.Drawing.Point(326, 109);
+            this.btn_eval.Name = "btn_eval";
+            this.btn_eval.Size = new System.Drawing.Size(91, 23);
+            this.btn_eval.TabIndex = 17;
+            this.btn_eval.Text = "Evaluation >>";
+            this.btn_eval.UseVisualStyleBackColor = true;
+            this.btn_eval.Click += new System.EventHandler(this.btn_eval_Click);
+            // 
+            // panel_eval
+            // 
+            this.panel_eval.Controls.Add(this.label9);
+            this.panel_eval.Controls.Add(this.label8);
+            this.panel_eval.Controls.Add(this.label7);
+            this.panel_eval.Controls.Add(this.listView_pos);
+            this.panel_eval.Controls.Add(this.listView_eval);
+            this.panel_eval.Controls.Add(this.listView_his);
+            this.panel_eval.Location = new System.Drawing.Point(423, 17);
+            this.panel_eval.Name = "panel_eval";
+            this.panel_eval.Size = new System.Drawing.Size(642, 506);
+            this.panel_eval.TabIndex = 18;
+            // 
+            // listView_his
+            // 
+            this.listView_his.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView_his.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.col_symbol_,
+            this.col_command_,
+            this.col_lots_,
+            this.col_price_,
+            this.col_time_});
+            this.listView_his.GridLines = true;
+            this.listView_his.HideSelection = false;
+            this.listView_his.Location = new System.Drawing.Point(0, 216);
+            this.listView_his.Name = "listView_his";
+            this.listView_his.Size = new System.Drawing.Size(628, 290);
+            this.listView_his.TabIndex = 0;
+            this.listView_his.UseCompatibleStateImageBehavior = false;
+            this.listView_his.View = System.Windows.Forms.View.Details;
+            // 
+            // listView_eval
+            // 
+            this.listView_eval.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView_eval.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.col_name,
+            this.col_value});
+            this.listView_eval.GridLines = true;
+            this.listView_eval.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listView_eval.Location = new System.Drawing.Point(464, 25);
+            this.listView_eval.Name = "listView_eval";
+            this.listView_eval.Size = new System.Drawing.Size(164, 169);
+            this.listView_eval.TabIndex = 1;
+            this.listView_eval.UseCompatibleStateImageBehavior = false;
+            this.listView_eval.View = System.Windows.Forms.View.Details;
+            // 
+            // listView_pos
+            // 
+            this.listView_pos.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.col_Symbol,
+            this.col_Cmd,
+            this.col_Lots,
+            this.col_OpenPrice,
+            this.col_OpenTime});
+            this.listView_pos.GridLines = true;
+            this.listView_pos.HideSelection = false;
+            this.listView_pos.Location = new System.Drawing.Point(0, 25);
+            this.listView_pos.Name = "listView_pos";
+            this.listView_pos.Size = new System.Drawing.Size(458, 169);
+            this.listView_pos.TabIndex = 2;
+            this.listView_pos.UseCompatibleStateImageBehavior = false;
+            this.listView_pos.View = System.Windows.Forms.View.Details;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 5);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(90, 13);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Opened Positions";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 200);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(68, 13);
+            this.label8.TabIndex = 4;
+            this.label8.Text = "Transactions";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(461, 5);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(57, 13);
+            this.label9.TabIndex = 5;
+            this.label9.Text = "Evaluation";
+            // 
+            // col_Symbol
+            // 
+            this.col_Symbol.Text = "Symbol";
+            // 
+            // col_Cmd
+            // 
+            this.col_Cmd.Text = "Command";
+            // 
+            // col_Lots
+            // 
+            this.col_Lots.Text = "Lots";
+            // 
+            // col_OpenPrice
+            // 
+            this.col_OpenPrice.Text = "OpenPrice";
+            // 
+            // col_OpenTime
+            // 
+            this.col_OpenTime.Text = "OpenTime";
+            // 
+            // col_symbol_
+            // 
+            this.col_symbol_.Text = "Symbol";
+            // 
+            // col_command_
+            // 
+            this.col_command_.Text = "Command";
+            // 
+            // col_lots_
+            // 
+            this.col_lots_.Text = "Lots";
+            // 
+            // col_price_
+            // 
+            this.col_price_.Text = "Price";
+            // 
+            // col_time_
+            // 
+            this.col_time_.Text = "Time";
+            // 
+            // col_name
+            // 
+            this.col_name.Width = 80;
+            // 
+            // col_value
+            // 
+            this.col_value.Width = 80;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(429, 535);
+            this.ClientSize = new System.Drawing.Size(1063, 535);
+            this.Controls.Add(this.panel_eval);
+            this.Controls.Add(this.btn_eval);
             this.Controls.Add(this.cmb_symbol);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btn_clear);
@@ -220,6 +392,8 @@
             this.Controls.Add(this.btn_start);
             this.Name = "Form1";
             this.Text = "LifestyleTrader";
+            this.panel_eval.ResumeLayout(false);
+            this.panel_eval.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -244,6 +418,26 @@
         private System.Windows.Forms.DateTimePicker dtpicker_en;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmb_symbol;
+        private System.Windows.Forms.Button btn_eval;
+        private System.Windows.Forms.Panel panel_eval;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ListView listView_pos;
+        private System.Windows.Forms.ListView listView_eval;
+        private System.Windows.Forms.ListView listView_his;
+        private System.Windows.Forms.ColumnHeader col_Symbol;
+        private System.Windows.Forms.ColumnHeader col_Cmd;
+        private System.Windows.Forms.ColumnHeader col_Lots;
+        private System.Windows.Forms.ColumnHeader col_OpenPrice;
+        private System.Windows.Forms.ColumnHeader col_OpenTime;
+        private System.Windows.Forms.ColumnHeader col_symbol_;
+        private System.Windows.Forms.ColumnHeader col_command_;
+        private System.Windows.Forms.ColumnHeader col_lots_;
+        private System.Windows.Forms.ColumnHeader col_price_;
+        private System.Windows.Forms.ColumnHeader col_time_;
+        private System.Windows.Forms.ColumnHeader col_name;
+        private System.Windows.Forms.ColumnHeader col_value;
     }
 }
 

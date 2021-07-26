@@ -13,7 +13,7 @@ namespace LifestyleCommon
 
         }
 
-        public bool Connect(string sHost, string sPort, string sID)
+        public bool Connect(string sHost, int nPort, int nID)
         {
             return true;
         }
@@ -36,6 +36,11 @@ namespace LifestyleCommon
         public bool RequestOrder(ORDER_COMMAND cmd, Symbol symbol, ref double dLots, ref double dPrice)
         {
             return true;
+        }
+
+        public double GetLots(Symbol symbol)
+        {
+            return 0;
         }
 
         public Tick GetRate(Symbol symbol)

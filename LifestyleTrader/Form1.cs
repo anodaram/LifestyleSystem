@@ -12,6 +12,7 @@ namespace LifestyleTrader
 {
     public partial class Form1 : Form
     {
+        private object m_oLock = null;
         public Form1()
         {
             InitializeComponent();
@@ -21,7 +22,9 @@ namespace LifestyleTrader
                 cmb_mode.Items.Add(eMode.ToString());
             }
             btn_stop.Enabled = false;
+            this.Width -= panel_eval.Width;
             Manager.Init(this);
+            m_oLock = new object();
         }
 
         private void btn_start_Click(object sender, EventArgs e)
@@ -66,7 +69,8 @@ namespace LifestyleTrader
 
         public void DisplayLog(string sLog)
         {
-            lock (txt_log)
+            if (m_oLock == null) return;
+            lock (m_oLock)
             {
                 txt_log.Invoke((MethodInvoker)delegate
                 {
@@ -102,7 +106,6 @@ namespace LifestyleTrader
                 });
             }
         }
-
         public void SetSymbolList(List<string> lstSymbol)
         {
             cmb_symbol.Items.Clear();
@@ -110,6 +113,28 @@ namespace LifestyleTrader
             {
                 cmb_symbol.Items.Add(sSymbol);
             }
+        }
+
+        private void btn_eval_Click(object sender, EventArgs e)
+        {
+            if (btn_eval.Text.Contains(">>"))
+            {
+                btn_eval.Text = btn_eval.Text.Replace(">>", "<<");
+                this.Width += panel_eval.Width;
+            }
+            else if (btn_eval.Text.Contains("<<"))
+            {
+                btn_eval.Text = btn_eval.Text.Replace("<<", ">>");
+                this.Width -= panel_eval.Width;
+            }
+        }
+
+        public void GetListViews(List<ListView> lstListView)
+        {
+            lstListView.Clear();
+            lstListView.Add(listView_pos);
+            lstListView.Add(listView_eval);
+            lstListView.Add(listView_his);
         }
     }
 }
