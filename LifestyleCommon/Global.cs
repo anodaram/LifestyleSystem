@@ -19,6 +19,22 @@ namespace LifestyleCommon
 
         // constants
         public const double EPS = 1e-5;
+        
+        // Util functions
+        public static DateTime UnixSecondsToDateTime(long unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp);
+            return dtDateTime;
+        }
+
+        public static long UnixDateTimeToSeconds(DateTime dt)
+        {
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan diff = dt - origin;
+            return (long)diff.TotalSeconds;
+        }
     }
 
     public class Ohlc

@@ -33,7 +33,7 @@ namespace LifestyleCommon
             return null;
         }
 
-        public bool RequestOrder(ORDER_COMMAND cmd, Symbol symbol, ref double dLots, ref double dPrice)
+        public bool RequestOrder(Symbol symbol, ORDER_COMMAND cmd, ref double dLots, ref double dPrice)
         {
             return true;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using LifestyleCommon;
 
 namespace LifestyleTrader
@@ -16,9 +17,13 @@ namespace LifestyleTrader
         List<Position> m_lstPos = new List<Position>();
         double m_dMaxProfit;
         double m_dMDD;
+        ListView m_listView_pos = null;
+        ListView m_listView_eval = null;
+        ListView m_listView_his = null;
 
         public Evaluation()
         {
+            Manager.g_mainForm.GetListViews(ref m_listView_pos, ref m_listView_eval, ref m_listView_his);
             Init();
         }
 
@@ -32,7 +37,7 @@ namespace LifestyleTrader
             m_dMDD = 0;
         }
 
-        public void RequestOrder(ORDER_COMMAND cmd, double dLots, double dPrice)
+        public void RequestOrder(string sSymbol, ORDER_COMMAND cmd, double dLots, double dPrice)
         {
             m_bUpdated = true;
             if (cmd == ORDER_COMMAND.BUY || cmd == ORDER_COMMAND.SELLCLOSE)
@@ -51,13 +56,28 @@ namespace LifestyleTrader
                 m_dBalance = m_dAsset;
                 m_dMaxProfit = Math.Max(m_dBalance, m_dMaxProfit);
                 m_dMDD = Math.Max(m_dMDD, m_dMaxProfit - m_dBalance);
+                removeFromListView(m_listView_pos);
             }
-            m_lstPos.Add(new Position()
+            Position pos = new Position()
             {
+                sSymbol = sSymbol,
                 eCmd = cmd,
                 dLots = dLots,
-                dPrice = dPrice
-            });
+                dPrice = dPrice,
+                dtTime = Manager.g_dtCurTime
+            };
+            m_lstPos.Add(pos);
+
+            addToListView(m_listView_his, pos);
+            if (cmd == ORDER_COMMAND.BUY || cmd == ORDER_COMMAND.SELL)
+            {
+                addToListView(m_listView_pos, pos);
+            }
+
+            if (IsUpdated())
+            {
+                Display();
+            }
         }
 
         public double Lots()
@@ -67,16 +87,58 @@ namespace LifestyleTrader
 
         public bool IsUpdated(bool bCheck = true)
         {
-            bool bRlt = m_bUpdated;
-            if (bCheck) m_bUpdated = false;
-            return bRlt;
+            return m_bUpdated;
+        }
+
+        public void Display()
+        {
+            m_bUpdated = false;
+        }
+
+        private ListViewItem posToItem(Position pos)
+        {
+            ListViewItem item = new ListViewItem();
+            item.SubItems.Add(pos.sSymbol);
+            item.SubItems.Add(pos.eCmd.ToString());
+            item.SubItems.Add(pos.dLots.ToString());
+            item.SubItems.Add(pos.dPrice.ToString());
+            item.SubItems.Add(pos.dtTime.ToString());
+            return item;
+        }
+
+        private void addToListView(ListView listView, Position pos)
+        {
+            lock (listView)
+            {
+                listView.Invoke((MethodInvoker)delegate
+                {
+                    listView.BeginUpdate();
+                    listView.Items.Add(posToItem(pos));
+                    listView.EndUpdate();
+                });
+            }
+        }
+
+        private void removeFromListView(ListView listView)
+        {
+            lock (listView)
+            {
+                listView.Invoke((MethodInvoker)delegate
+                {
+                    listView.BeginUpdate();
+                    listView.Items.Clear();
+                    listView.EndUpdate();
+                });
+            }
         }
 
         private struct Position
         {
+            public string sSymbol;
             public ORDER_COMMAND eCmd;
             public double dLots;
             public double dPrice;
+            public DateTime dtTime;
         }
     }
 }

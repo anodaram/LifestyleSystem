@@ -42,5 +42,15 @@ namespace LifestyleTrader
         {
             return DateTime.Now;
         }
+
+        public double Ask()
+        {
+            return 0;
+        }
+
+        public double Bid()
+        {
+            return 0;
+        }
     }
 }

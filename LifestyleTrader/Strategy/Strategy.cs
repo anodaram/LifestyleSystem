@@ -60,19 +60,23 @@ namespace LifestyleTrader
 
             if (cmd == ORDER_COMMAND.NONE && m_lstSignal.Contains(ORDER_COMMAND.BUY))
             {
-                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+                dPrice = m_TFEngine.Ask();
+                requestOrder(m_symbol, ORDER_COMMAND.BUY, ref dLots, ref dPrice);
             }
             else if (cmd == ORDER_COMMAND.NONE && m_lstSignal.Contains(ORDER_COMMAND.SELL))
             {
-                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+                dPrice = m_TFEngine.Bid();
+                requestOrder(m_symbol, ORDER_COMMAND.SELL, ref dLots, ref dPrice);
             }
             else if (cmd == ORDER_COMMAND.BUY && m_lstSignal.Contains(ORDER_COMMAND.BUYCLOSE))
             {
-                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+                dPrice = m_TFEngine.Bid();
+                requestOrder(m_symbol, ORDER_COMMAND.SELL, ref dLots, ref dPrice);
             }
             else if (cmd == ORDER_COMMAND.SELL && m_lstSignal.Contains(ORDER_COMMAND.SELLCLOSE))
             {
-                requestOrder(ORDER_COMMAND.BUY, m_symbol, ref dLots, ref dPrice);
+                dPrice = m_TFEngine.Ask();
+                requestOrder(m_symbol, ORDER_COMMAND.BUY, ref dLots, ref dPrice);
             }
         }
 
@@ -332,14 +336,14 @@ namespace LifestyleTrader
             return Manager.g_broker.GetLots(symbol);
         }
 
-        private bool requestOrder(ORDER_COMMAND cmd, Symbol symbol, ref double dLots, ref double dPrice)
+        private bool requestOrder(Symbol symbol, ORDER_COMMAND cmd, ref double dLots, ref double dPrice)
         {
             bool bRlt = true;
             if (Manager.g_eMode == RUN_MODE.REAL_TRADE)
             {
-                bRlt = Manager.g_broker.RequestOrder(cmd, symbol, ref dLots, ref dPrice);
+                bRlt = Manager.g_broker.RequestOrder(symbol, cmd, ref dLots, ref dPrice);
             }
-            m_evaluation.RequestOrder(cmd, dLots, dPrice);
+            m_evaluation.RequestOrder(symbol.m_sSymbol, cmd, dLots, dPrice);
             return bRlt;
         }
     }

@@ -24,6 +24,7 @@ namespace LifestyleTrader
         private static Thread g_mainThread = null;
         private static bool g_bRunning = false;
         private static DateTime g_dtLastDisplayState = new DateTime();
+        public static DateTime g_dtCurTime = new DateTime();
 
         public static void Init(Form1 form)
         {
@@ -122,6 +123,7 @@ namespace LifestyleTrader
             foreach (var ohlc in lstOhlc)
             {
                 if (!g_bRunning) break;
+                g_dtCurTime = Global.UnixSecondsToDateTime(ohlc.time);
                 g_strategy.PushOhlc(ohlc);
                 g_strategy.OnTick();
                 nCur++;
@@ -135,6 +137,7 @@ namespace LifestyleTrader
             while (g_bRunning)
             {
                 Tick tick = g_broker.GetRate(g_strategy.symbol());
+                g_dtCurTime = DateTime.Now;
                 g_strategy.PushTick(tick);
                 Thread.Sleep(100);
             }

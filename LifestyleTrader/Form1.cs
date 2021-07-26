@@ -129,12 +129,11 @@ namespace LifestyleTrader
             }
         }
 
-        public void GetListViews(List<ListView> lstListView)
+        public void GetListViews(ref ListView listView_pos, ref ListView listView_eval, ref ListView listView_his)
         {
-            lstListView.Clear();
-            lstListView.Add(listView_pos);
-            lstListView.Add(listView_eval);
-            lstListView.Add(listView_his);
+            listView_pos = this.listView_pos;
+            listView_eval = this.listView_eval;
+            listView_his = this.listView_his;
         }
     }
 }
