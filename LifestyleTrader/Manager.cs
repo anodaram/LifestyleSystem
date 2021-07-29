@@ -32,6 +32,7 @@ namespace LifestyleTrader
             PutLog("Inited");
             g_mainConfig = new MainConfig(Global.MAIN_CONFIG);
             g_symbolConfig = new SymbolConfig(Global.SYMBOL_CONFIG);
+            form.SetSymbolList(g_symbolConfig.SymbolNameList());
             Global.OnLog = PutLog;
             PutLog("Loading Config success");
         }
@@ -61,8 +62,9 @@ namespace LifestyleTrader
             if (g_database == null)
             {// init database
                 PutLog("Initializing Database ...");
-                g_database = new MySQL(g_mainConfig.m_sDB_Name, g_mainConfig.m_nDB_Port,
+                g_database = new MySQL(g_mainConfig.m_sDB_Server, g_mainConfig.m_nDB_Port,
                     g_mainConfig.m_sDB_User, g_mainConfig.m_sDB_Pwd);
+                g_database.CreateTable(sSymbol);
                 PutLog("Database init success");
             }
             PutLog(string.Format("Start({0},{1},{2},{3})", eMode, sSymbol, dtStart, dtEnd));
@@ -117,7 +119,7 @@ namespace LifestyleTrader
         private static void runBacktest(DateTime dtStart, DateTime dtEnd)
         {
             g_eMode = RUN_MODE.BACKTEST;
-            var lstOhlc = g_database.Get(g_strategy.SymbolEx(), dtStart, dtEnd);
+            var lstOhlc = g_database.Load(g_strategy.SymbolEx(), dtStart, dtEnd);
             int nTot = lstOhlc.Count;
             int nCur = 0;
             foreach (var ohlc in lstOhlc)

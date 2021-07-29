@@ -11,7 +11,7 @@ namespace LifestyleCommon
     public class MainConfig
     {
         private JObject m_jConfig = null;
-        public string m_sDB_Name = "localhost";
+        public string m_sDB_Server = "localhost";
         public int m_nDB_Port = 3306;
         public string m_sDB_User = "root";
         public string m_sDB_Pwd = "root";
@@ -23,7 +23,7 @@ namespace LifestyleCommon
         {
             m_jConfig = JObject.Parse(File.ReadAllText(sFile));
             var jDB = m_jConfig["database"];
-            m_sDB_Name = (string)jDB["db_name"];
+            m_sDB_Server = (string)jDB["db_server"];
             m_nDB_Port = (int)jDB["port"];
             m_sDB_User = (string)jDB["user"];
             m_sDB_Pwd = (string)jDB["password"];
@@ -70,6 +70,16 @@ namespace LifestyleCommon
                 if (symbol.m_sSymbol == sSymbol) return symbol;
             }
             return null;
+        }
+
+        public List<string> SymbolNameList()
+        {
+            List<string> lstSymbolName = new List<string>();
+            foreach (var symbol in m_lstSymbol)
+            {
+                lstSymbolName.Add(symbol.m_sSymbol);
+            }
+            return lstSymbolName;
         }
     }
 
