@@ -152,13 +152,13 @@ namespace LifestyleCommon
 
                 connection = new MySqlConnection(connectionQuery);
                 connection.Open();
-                Console.WriteLine("Connected to mysql database");
+                Global.OnLog("Connected to mysql database");
                 _isConnted = true;
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to connect to mysql database : " + ex.Message);
+                Global.OnLog("Failed to connect to mysql database : " + ex.Message);
                 _isConnted = false;
                 return false;
             }
@@ -190,12 +190,11 @@ namespace LifestyleCommon
                 var cmd = new MySqlCommand(sql, connection);
                 var reader = cmd.ExecuteReader();
                 reader.Close();
-                Console.WriteLine("executed sql query - " + reader.ToString());
-
+                Global.OnLog("executed sql query - " + sql);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Global.OnLog(ex.Message);
             }
         }
 
@@ -354,7 +353,7 @@ namespace LifestyleCommon
         {
             if (debug)
             {
-                Console.WriteLine(query);
+                Global.OnLog(query);
             }
 
             var cmd = new MySqlCommand(query, connection);

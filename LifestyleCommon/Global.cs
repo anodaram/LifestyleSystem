@@ -13,6 +13,7 @@ namespace LifestyleCommon
 
         // file path
         public static string LOG_TRADER_DIR = Directory.GetCurrentDirectory() + "\\logs\\log_trader\\";
+        public static string LOG_MANAGER_DIR = Directory.GetCurrentDirectory() + "\\logs\\log_manager\\";
         public static string MAIN_CONFIG = Directory.GetCurrentDirectory() + "\\config\\main.json";
         public static string SYMBOL_CONFIG = Directory.GetCurrentDirectory() + "\\config\\symbols.json";
         public static string STRATEGY_CONFIG = Directory.GetCurrentDirectory() + "\\config\\strategy.json";
@@ -34,6 +35,25 @@ namespace LifestyleCommon
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan diff = dt - origin;
             return (long)diff.TotalSeconds;
+        }
+
+        public static DateTime ParseDate(string str)
+        {
+            string x = "";
+            foreach (var c in str)
+            {
+                if (c >= '0' && c <= '9')
+                {
+                    x += c;
+                }
+            }
+            return new DateTime(
+                int.Parse(x.Substring(0, 4)),
+                int.Parse(x.Substring(4, 2)),
+                int.Parse(x.Substring(6, 2)),
+                int.Parse(x.Substring(8, 2)),
+                int.Parse(x.Substring(10, 2)),
+                int.Parse(x.Substring(12, 2)));
         }
     }
 

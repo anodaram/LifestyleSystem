@@ -35,6 +35,7 @@ namespace LifestyleTrader
             form.SetSymbolList(g_symbolConfig.SymbolNameList());
             Global.OnLog = PutLog;
             PutLog("Loading Config success");
+            g_broker.Init();
         }
 
         public static void PutLog(string sLog)
