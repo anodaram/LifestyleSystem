@@ -77,12 +77,11 @@ namespace LifestyleTrader
                 {
                     addToListView(m_listView_pos, pos);
                 }
+                if (IsUpdated())
+                {
+                    Display();
+                }
             });
-
-            if (IsUpdated())
-            {
-                Display();
-            }
         }
 
         public double Lots()
@@ -98,6 +97,20 @@ namespace LifestyleTrader
         public void Display()
         {
             m_bUpdated = false;
+            m_listView_eval.BeginUpdate();
+            m_listView_eval.Items.Clear();
+            foreach (var p in new Dictionary<string, string>()
+            {
+                { "Profit", string.Format("{0:N6}", m_dBalance) },
+                { "TradeCnt", m_lstPos.Count.ToString() },
+                { "MDD", string.Format("{0:N6}", m_dMDD) }
+            })
+            {
+                ListViewItem item = new ListViewItem() { Text = p.Key };
+                item.SubItems.Add(p.Value);
+                m_listView_eval.Items.Add(item);
+            }
+            m_listView_eval.EndUpdate();
         }
 
         private ListViewItem posToItem(Position pos)
@@ -112,28 +125,16 @@ namespace LifestyleTrader
 
         private void addToListView(ListView listView, Position pos)
         {
-            //lock (listView)
-            {
-                //listView.Invoke((MethodInvoker)delegate
-                {
-                    listView.BeginUpdate();
-                    listView.Items.Add(posToItem(pos));
-                    listView.EndUpdate();
-                }//);
-            }
+            listView.BeginUpdate();
+            listView.Items.Add(posToItem(pos));
+            listView.EndUpdate();
         }
 
         private void removeFromListView(ListView listView)
         {
-            //lock (listView)
-            {
-                //listView.Invoke((MethodInvoker)delegate
-                {
-                    listView.BeginUpdate();
-                    listView.Items.Clear();
-                    listView.EndUpdate();
-                }//);
-            }
+            listView.BeginUpdate();
+            listView.Items.Clear();
+            listView.EndUpdate();
         }
 
         private struct Position
