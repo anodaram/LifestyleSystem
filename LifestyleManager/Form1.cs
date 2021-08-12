@@ -118,7 +118,49 @@ namespace LifestyleManager
 
         private void btn_loadRate_Click(object sender, EventArgs e)
         {
-
+            btn_loadRate.Enabled = false;
+            new Thread(() =>
+            {
+                try
+                {
+                    if (m_database == null)
+                    {
+                        PutLog(" DB is not connected");
+                        return;
+                    }
+                    listView1.Invoke((MethodInvoker)delegate
+                    {
+                        string sSymbol = cmb_symbol.Text;
+                        DateTime dtStart = dateTimePicker_st.Value.Date;
+                        DateTime dtEnd = dateTimePicker_en.Value.Date.AddDays(1);
+                        List<Ohlc> lstData = m_database.Load(sSymbol, dtStart, dtEnd);
+                        lstData.Sort((x, y) => (int)(x.time - y.time));
+                        listView1.BeginUpdate();
+                        listView1.Items.Clear();
+                        foreach (var ohlc in lstData)
+                        {
+                            ListViewItem item = new ListViewItem()
+                            {
+                                Text = Global.UnixSecondsToDateTime(ohlc.time).ToString("yyyy-MM-dd HH:mm:ss")
+                            };
+                            item.SubItems.Add(ohlc.open.ToString());
+                            item.SubItems.Add(ohlc.high.ToString());
+                            item.SubItems.Add(ohlc.low.ToString());
+                            item.SubItems.Add(ohlc.close.ToString());
+                            listView1.Items.Add(item);
+                        }
+                        listView1.EndUpdate();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    PutLog("loadRate Exception : " + ex.Message);
+                }
+                btn_loadRate.Invoke((MethodInvoker)delegate
+                {
+                    btn_loadRate.Enabled = true;
+                });
+            }).Start();
         }
 
         private void btn_cur_Click(object sender, EventArgs e)

@@ -23,7 +23,8 @@ namespace LifestyleTrader
         public Strategy(Symbol symbol, JObject jStrategy)
         {
             m_symbol = symbol;
-            m_TFEngine = new TFEngine(symbol);
+            m_TFEngine = new TFEngine(symbol, Manager.g_symbolConfig.m_lstTF);
+            m_jStateFormula = (JArray)jStrategy["state_formula"];
         }
 
         public string SymbolEx()
@@ -196,6 +197,7 @@ namespace LifestyleTrader
                 return m_dDefaultRate;
             }
             Ohlc ohlc = m_TFEngine.GetOhlc(sTF, nShift);
+            if (ohlc == null) return m_dDefaultRate;
             if (c == 'O') return ohlc.open;
             if (c == 'H') return ohlc.high;
             if (c == 'L') return ohlc.low;
@@ -239,8 +241,8 @@ namespace LifestyleTrader
                     }
                     else if (p.Key == "cmp")
                     {
-                        double dLeft = pastRate((string)p.Value[0], (string)p.Value[1], ((string)p.Value[2])[0], int.Parse((string)p.Value[3]));
-                        double dRight = pastRate((string)p.Value[5], (string)p.Value[6], ((string)p.Value[7])[0], int.Parse((string)p.Value[8]));
+                        double dLeft = pastRate((string)p.Value[0], (string)p.Value[1], ((string)p.Value[2])[0], (string)p.Value[3]);
+                        double dRight = pastRate((string)p.Value[5], (string)p.Value[6], ((string)p.Value[7])[0], (string)p.Value[8]);
                         string cmp = (string)p.Value[4];
                         if (cmp == ">") bFlag &= dLeft > dRight;
                         else if (cmp == "<") bFlag &= dLeft < dRight;
@@ -251,7 +253,7 @@ namespace LifestyleTrader
                     else if (p.Key == "order")
                     {
                         setOrder((string)p.Value);
-                        Manager.PutLog("Set order : " + p.Value);
+                        //Manager.PutLog("Set order : " + p.Value);
                     }
                     else if (p.Key == "children")
                     {
@@ -279,7 +281,9 @@ namespace LifestyleTrader
 
         private void setOrder(string sCmd)
         {
-            m_lstSignal.Add((ORDER_COMMAND)Enum.Parse(typeof(ORDER_COMMAND), sCmd));
+            string[] sWords = sCmd.Split(' ');
+            m_lstSignal.Add((ORDER_COMMAND)Enum.Parse(typeof(ORDER_COMMAND), sWords[0]));
+            double dLots = double.Parse(sWords[1]);
         }
 
         private bool checkState(string sKey, string sValue)
@@ -292,8 +296,9 @@ namespace LifestyleTrader
             return m_dicStates.ContainsKey(Tuple.Create(sKey, sValue));
         }
 
-        private double pastRate(string sTF, string sPattern, char c, int nShift)
+        private double pastRate(string sTF, string sPattern, char c, string sShift)
         {
+            int nShift = sShift.Length < 1 ? 0 : int.Parse(sShift);
             if (sTF.Length == 0) // added at 2021-06-24
             {
                 try
@@ -338,6 +343,8 @@ namespace LifestyleTrader
 
         private bool requestOrder(Symbol symbol, ORDER_COMMAND cmd, ref double dLots, ref double dPrice)
         {
+            Manager.PutLog(string.Format("requestOrder({0},{1},{2},{3})",
+                symbol.m_sSymbol, cmd, dLots, dPrice));
             bool bRlt = true;
             if (Manager.g_eMode == RUN_MODE.REAL_TRADE)
             {

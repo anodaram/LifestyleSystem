@@ -50,13 +50,14 @@ namespace LifestyleTrader
                 m_dLots -= dLots;
                 m_dAsset += dLots * dPrice;
             }
+            bool bClosed = false;
             if (Math.Abs(m_dLots) < Global.EPS)
             {
                 m_dLots = 0;
                 m_dBalance = m_dAsset;
                 m_dMaxProfit = Math.Max(m_dBalance, m_dMaxProfit);
                 m_dMDD = Math.Max(m_dMDD, m_dMaxProfit - m_dBalance);
-                removeFromListView(m_listView_pos);
+                bClosed = true;
             }
             Position pos = new Position()
             {
@@ -68,11 +69,15 @@ namespace LifestyleTrader
             };
             m_lstPos.Add(pos);
 
-            addToListView(m_listView_his, pos);
-            if (cmd == ORDER_COMMAND.BUY || cmd == ORDER_COMMAND.SELL)
+            Manager.g_mainForm.Invoke((System.Windows.Forms.MethodInvoker)delegate
             {
-                addToListView(m_listView_pos, pos);
-            }
+                addToListView(m_listView_his, pos);
+                if (bClosed) removeFromListView(m_listView_pos);
+                else
+                {
+                    addToListView(m_listView_pos, pos);
+                }
+            });
 
             if (IsUpdated())
             {
@@ -97,38 +102,37 @@ namespace LifestyleTrader
 
         private ListViewItem posToItem(Position pos)
         {
-            ListViewItem item = new ListViewItem();
-            item.SubItems.Add(pos.sSymbol);
+            ListViewItem item = new ListViewItem() { Text = pos.sSymbol };
             item.SubItems.Add(pos.eCmd.ToString());
             item.SubItems.Add(pos.dLots.ToString());
             item.SubItems.Add(pos.dPrice.ToString());
-            item.SubItems.Add(pos.dtTime.ToString());
+            item.SubItems.Add(pos.dtTime.ToString("yyyy-MM-dd HH:mm:ss"));
             return item;
         }
 
         private void addToListView(ListView listView, Position pos)
         {
-            lock (listView)
+            //lock (listView)
             {
-                listView.Invoke((MethodInvoker)delegate
+                //listView.Invoke((MethodInvoker)delegate
                 {
                     listView.BeginUpdate();
                     listView.Items.Add(posToItem(pos));
                     listView.EndUpdate();
-                });
+                }//);
             }
         }
 
         private void removeFromListView(ListView listView)
         {
-            lock (listView)
+            //lock (listView)
             {
-                listView.Invoke((MethodInvoker)delegate
+                //listView.Invoke((MethodInvoker)delegate
                 {
                     listView.BeginUpdate();
                     listView.Items.Clear();
                     listView.EndUpdate();
-                });
+                }//);
             }
         }
 

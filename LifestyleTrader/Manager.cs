@@ -14,7 +14,7 @@ namespace LifestyleTrader
         public static Form1 g_mainForm = null;
         private static StreamWriter g_fileLog = null;
         private static MainConfig g_mainConfig = null;
-        private static SymbolConfig g_symbolConfig = null;
+        public static SymbolConfig g_symbolConfig = null;
         private static Strategy g_strategy = null;
         private static ChartCon g_chart = new ChartCon();
         public static TradeHistory g_tradeHistory = new TradeHistory();
@@ -84,6 +84,7 @@ namespace LifestyleTrader
                 if (eMode == RUN_MODE.BACKTEST)
                 {
                     runBacktest(dtStart, dtEnd);
+                    g_mainForm.OnStop();
                 }
                 else if (eMode == RUN_MODE.REAL_TRADE)
                 {
@@ -123,6 +124,7 @@ namespace LifestyleTrader
             var lstOhlc = g_database.Load(g_strategy.SymbolEx(), dtStart, dtEnd);
             int nTot = lstOhlc.Count;
             int nCur = 0;
+            PutLog("Load rates finished, total ticks = " + nTot);
             foreach (var ohlc in lstOhlc)
             {
                 if (!g_bRunning) break;
@@ -130,7 +132,13 @@ namespace LifestyleTrader
                 g_strategy.PushOhlc(ohlc);
                 g_strategy.OnTick();
                 nCur++;
+                double dPercent = 1.0 * nCur / nTot;
+                g_mainForm.DisplayPerformance(string.Format("{0} %, {1}", 
+                    ((int)(dPercent * 100 + 0.5)).ToString(), g_dtCurTime.ToString("yyyy-MM-dd HH:mm:ss")));
             }
+            g_mainForm.DisplayPerformance(string.Format("100 %, {0}", 
+                g_dtCurTime.ToString("yyyy-MM-dd HH:mm:ss")), true);
+            PutLog("Backtest finished");
         }
 
         private static void runRealTrade()

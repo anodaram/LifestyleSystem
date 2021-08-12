@@ -38,6 +38,7 @@ namespace LifestyleCommon
     {
         private JObject m_jConfig = null;
         public List<Symbol> m_lstSymbol = new List<Symbol>();
+        public List<TimeFrame> m_lstTF = new List<TimeFrame>();
 
         public SymbolConfig(string sFile)
         {
@@ -50,16 +51,19 @@ namespace LifestyleCommon
                 symbol.m_sSymbol = (string)jSymbol["symbol"];
                 symbol.m_sExchange = (string)jSymbol["exchange"];
                 symbol.m_sSecurity = (string)jSymbol["security"];
-                JArray jTimeFrames = (JArray)jSymbol["timeframes"];
-                foreach (var jTimeFrame in jTimeFrames)
-                {
-                    symbol.m_lstTimeFrame.Add(new TimeFrame()
-                    {
-                        m_sName = (string)jTimeFrame["name"],
-                        m_dtStart = TimeFrame.ConvertStartTime((string)jTimeFrame["start"])
-                    });
-                }
                 m_lstSymbol.Add(symbol);
+            }
+            JArray jTimeFrames = (JArray)m_jConfig["timeframes"];
+            m_lstTF.Clear();
+            foreach (var jTimeFrame in jTimeFrames)
+            {
+                m_lstTF.Add(new TimeFrame()
+                {
+                    m_sName = (string)jTimeFrame["name"],
+                    m_eType = (TF_TYPE)Enum.Parse(typeof(TF_TYPE), (string)jTimeFrame["type"], true),
+                    m_nStart = int.Parse((string)jTimeFrame["start"]),
+                    m_nSize = int.Parse((string)jTimeFrame["size"])
+                });
             }
         }
 
@@ -88,17 +92,39 @@ namespace LifestyleCommon
         public string m_sSymbol;
         public string m_sExchange;
         public string m_sSecurity;
-        public List<TimeFrame> m_lstTimeFrame = new List<TimeFrame>();
     }
 
     public class TimeFrame
     {
         public string m_sName;
-        public DateTime m_dtStart;
+        public long m_nStart;
+        public TF_TYPE m_eType;
+        public int m_nSize;
 
-        public static DateTime ConvertStartTime(string sStart)
-        {// not completed yet
-            return new DateTime();
+        public long GetStartMoment(long time)
+        {
+            time /= 60;
+            if (time == 0) return 0;
+            if (m_eType == TF_TYPE.small)
+            {
+                return 60 * (time - (((time % 10080) - (m_nStart % m_nSize) + m_nSize) % m_nSize));
+            }
+            else if (m_eType == TF_TYPE.medium)
+            {
+                return 60 * (time - ((((time - m_nStart) % m_nSize) + m_nSize) % m_nSize));
+            }
+            else if (m_eType == TF_TYPE.large)
+            { // not completed yet
+                return 60 * time;
+            }
+            return 0;
         }
+    }
+
+    public enum TF_TYPE
+    {
+        small = 0,
+        medium = 1,
+        large = 2
     }
 }

@@ -40,9 +40,14 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.dateTimePicker_st = new System.Windows.Forms.DateTimePicker();
             this.dateTimePicker_en = new System.Windows.Forms.DateTimePicker();
-            this.listView1 = new System.Windows.Forms.ListView();
             this.label4 = new System.Windows.Forms.Label();
             this.txt_debug = new System.Windows.Forms.TextBox();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.col_t = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_o = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_h = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_l = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.col_c = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // btn_connectDB
@@ -152,14 +157,6 @@
             this.dateTimePicker_en.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker_en.TabIndex = 11;
             // 
-            // listView1
-            // 
-            this.listView1.Location = new System.Drawing.Point(12, 158);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(445, 329);
-            this.listView1.TabIndex = 12;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -177,6 +174,50 @@
             this.txt_debug.ReadOnly = true;
             this.txt_debug.Size = new System.Drawing.Size(150, 13);
             this.txt_debug.TabIndex = 13;
+            // 
+            // listView1
+            // 
+            this.listView1.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.col_t,
+            this.col_o,
+            this.col_h,
+            this.col_l,
+            this.col_c});
+            this.listView1.Location = new System.Drawing.Point(12, 158);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(445, 329);
+            this.listView1.TabIndex = 12;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            // 
+            // col_t
+            // 
+            this.col_t.Text = "Time";
+            this.col_t.Width = 140;
+            // 
+            // col_o
+            // 
+            this.col_o.Text = "Open";
+            this.col_o.Width = 70;
+            // 
+            // col_h
+            // 
+            this.col_h.Text = "High";
+            this.col_h.Width = 70;
+            // 
+            // col_l
+            // 
+            this.col_l.Text = "Low";
+            this.col_l.Width = 70;
+            // 
+            // col_c
+            // 
+            this.col_c.Text = "Close";
+            this.col_c.Width = 70;
             // 
             // Form1
             // 
@@ -220,9 +261,14 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.DateTimePicker dateTimePicker_st;
         private System.Windows.Forms.DateTimePicker dateTimePicker_en;
-        private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txt_debug;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader col_t;
+        private System.Windows.Forms.ColumnHeader col_o;
+        private System.Windows.Forms.ColumnHeader col_h;
+        private System.Windows.Forms.ColumnHeader col_l;
+        private System.Windows.Forms.ColumnHeader col_c;
     }
 }
 

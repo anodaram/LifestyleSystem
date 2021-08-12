@@ -12,6 +12,7 @@ namespace LifestyleTrader
 {
     public partial class Form1 : Form
     {
+        private DateTime g_dtLastPerfUpdate = new DateTime();
         private object m_oLock = null;
         public Form1()
         {
@@ -96,16 +97,20 @@ namespace LifestyleTrader
             }
         }
 
-        public void DisplayPerformance(double dPercent)
+        public void DisplayPerformance(string sPerf, bool bMust = false)
         {
+            if (!bMust && DateTime.Now < g_dtLastPerfUpdate.AddMilliseconds(500)) return;
+            g_dtLastPerfUpdate = DateTime.Now;
             lock (txt_perf)
             {
                 txt_perf.Invoke((MethodInvoker)delegate
                 {
-                    txt_perf.Text = ((int)(dPercent * 100 + 0.5)).ToString() + " %";
+                    txt_perf.Text = sPerf;
                 });
             }
+            g_dtLastPerfUpdate = DateTime.Now;
         }
+
         public void SetSymbolList(List<string> lstSymbol)
         {
             cmb_symbol.Items.Clear();
@@ -113,6 +118,18 @@ namespace LifestyleTrader
             {
                 cmb_symbol.Items.Add(sSymbol);
             }
+        }
+
+        public void OnStop()
+        {
+            try
+            {
+                btn_stop.Invoke((MethodInvoker)delegate
+                {
+                    btn_stop_Click(null, null);
+                });
+            }
+            catch { }
         }
 
         private void btn_eval_Click(object sender, EventArgs e)
