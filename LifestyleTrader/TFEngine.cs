@@ -10,13 +10,14 @@ namespace LifestyleTrader
     class TFEngine
     {
         Symbol m_symbol = null;
+        string m_sStrategyID = "";
         Dictionary<string, TimeFrame> m_dicTF = new Dictionary<string, TimeFrame>();
         double m_dAsk;
         double m_dBid;
         long m_time;
         Dictionary<string, List<Ohlc>> m_dicOHLC = new Dictionary<string, List<Ohlc>>();
 
-        public TFEngine(Symbol symbol, List<TimeFrame> lstTF)
+        public TFEngine(Symbol symbol, List<TimeFrame> lstTF, string sStrategyID)
         {
             m_symbol = symbol;
             m_dicTF.Clear();
@@ -26,16 +27,29 @@ namespace LifestyleTrader
                 m_dicTF.Add(tf.m_sName, tf);
                 m_dicOHLC.Add(tf.m_sName, new List<Ohlc>());
             }
+            m_sStrategyID = sStrategyID;
         }
 
         public void PushTick(Tick tick)
         {
+            if (m_dAsk == tick.ask && m_dBid == tick.bid && (m_time / 60 == tick.time / 60)) return;
             m_dAsk = tick.ask;
             m_dBid = tick.bid;
             m_time = tick.time;
             foreach (var tf in m_dicTF)
             {
-                pushTick(tf.Value, m_dicOHLC[tf.Key], tick);
+                Ohlc ohlc = pushTick(tf.Value, m_dicOHLC[tf.Key], tick);
+                Manager.g_chart.Send(new List<string>()
+                {
+                    m_sStrategyID,
+                    "rate",
+                    tf.Key,
+                    ohlc.time.ToString(),
+                    ohlc.open.ToString(),
+                    ohlc.high.ToString(),
+                    ohlc.low.ToString(),
+                    ohlc.close.ToString()
+                });
             }
         }
 
@@ -79,7 +93,7 @@ namespace LifestyleTrader
             return m_dBid;
         }
 
-        private void pushTick(TimeFrame tf, List<Ohlc> lstOhlc, Tick tick)
+        private Ohlc pushTick(TimeFrame tf, List<Ohlc> lstOhlc, Tick tick)
         {
             Ohlc lastOhlc = lstOhlc.Count > 0 ? lstOhlc[lstOhlc.Count - 1] : new Ohlc();
             long stMoment = tf.GetStartMoment(tick.time);
@@ -94,7 +108,7 @@ namespace LifestyleTrader
             }
             else
             {
-                lstOhlc.Add(new Ohlc()
+                lstOhlc.Add(lastOhlc = new Ohlc()
                 {
                     time = stMoment,
                     open = tick.bid,
@@ -107,6 +121,7 @@ namespace LifestyleTrader
                     close_ask = tick.ask
                 });
             }
+            return lastOhlc;
         }
     }
 }

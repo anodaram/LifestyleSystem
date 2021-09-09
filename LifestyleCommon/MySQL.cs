@@ -87,9 +87,9 @@ namespace LifestyleCommon
                     { "time", Global.UnixSecondsToDateTime(ohlc.time).ToString("yyyy/MM/dd-HH:mm:ss.fff") },
                     { "symbol", sSymbol },
                     { "open", ohlc.open.ToString() },
-                    { "high", ohlc.open.ToString() },
-                    { "low", ohlc.open.ToString() },
-                    { "close", ohlc.open.ToString() }
+                    { "high", ohlc.high.ToString() },
+                    { "low", ohlc.low.ToString() },
+                    { "close", ohlc.close.ToString() }
                 });
             }
             try

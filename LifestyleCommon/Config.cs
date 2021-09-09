@@ -18,6 +18,9 @@ namespace LifestyleCommon
         public string m_sIB_Host = "";
         public int m_nIB_Port = 4002;
         public int m_nIB_ID = 1;
+        public string m_sChart_Host = "";
+        public string m_sChart_User = "";
+        public string m_sChart_Pwd = "";
 
         public MainConfig(string sFile)
         {
@@ -31,6 +34,10 @@ namespace LifestyleCommon
             m_sIB_Host = (string)jIB["host"];
             m_nIB_Port = (int)jIB["port"];
             m_nIB_ID = (int)jIB["client_id"];
+            var jChart = m_jConfig["chart"];
+            m_sChart_Host = (string)jChart["host"];
+            m_sChart_User = (string)jChart["user"];
+            m_sChart_Pwd = (string)jChart["pwd"];
         }
     }
 

@@ -16,7 +16,7 @@ namespace LifestyleTrader
         private static MainConfig g_mainConfig = null;
         public static SymbolConfig g_symbolConfig = null;
         private static Strategy g_strategy = null;
-        private static ChartCon g_chart = new ChartCon();
+        public static ChartCon g_chart = new ChartCon();
         public static TradeHistory g_tradeHistory = new TradeHistory();
         public static RUN_MODE g_eMode = RUN_MODE.NONE;
         public static MySQL g_database = null;
@@ -56,6 +56,16 @@ namespace LifestyleTrader
                 g_fileLog.WriteLine(sLogEx);
                 g_mainForm.DisplayLog(sLogEx);
             }
+        }
+
+        public static bool CH_Connect()
+        {
+            return g_chart.Connect(g_mainConfig.m_sChart_Host, g_mainConfig.m_sChart_User, g_mainConfig.m_sChart_Pwd);
+        }
+
+        public static bool CH_Disconnect()
+        {
+            return g_chart.Disconnect();
         }
 
         public static void Start(RUN_MODE eMode, string sSymbol, DateTime dtStart, DateTime dtEnd)
@@ -111,11 +121,6 @@ namespace LifestyleTrader
                 }
                 catch { }
             }
-        }
-
-        public static bool ConnectChart()
-        {
-            return g_chart.Connect();
         }
 
         private static void runBacktest(DateTime dtStart, DateTime dtEnd)

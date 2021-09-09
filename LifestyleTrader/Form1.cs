@@ -49,12 +49,23 @@ namespace LifestyleTrader
 
         private void btn_chart_Click(object sender, EventArgs e)
         {
-            bool bRlt = Manager.ConnectChart();
-            Manager.PutLog("Connect Chart " + (bRlt ? "Success" : "Failed"));
-            if (bRlt)
+            string sConnect = "Connect Chart";
+            string sDisconnect = "Disconnect Chart";
+            btn_chart.Enabled = false;
+            if (btn_chart.Text == sConnect)
             {
-                btn_chart.Enabled = false;
+                bool bRlt = Manager.CH_Connect();
+                Manager.PutLog("Connect Chart " + (bRlt ? "Success" : "Failed"));
+                if (bRlt) btn_chart.Text = sDisconnect;
             }
+            else if (btn_chart.Text == sDisconnect)
+            {
+                btn_chart.Text = sConnect;
+                bool bRlt = Manager.CH_Disconnect();
+                Manager.PutLog("Disconnect Chart " + (bRlt ? "Success" : "Failed"));
+                if (bRlt) btn_chart.Text = sConnect;
+            }
+            btn_chart.Enabled = true;
         }
 
         private void btn_clear_Click(object sender, EventArgs e)
