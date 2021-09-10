@@ -20,7 +20,9 @@ namespace LifestyleCommon
 
         // constants
         public const double EPS = 1e-5;
-        
+        public const string MQ_TOPIC_CHART2TRADER = "CHART_TO_TRADER";
+        public const string MQ_TOPIC_TRADER2CHART = "TRADER_TO_CHART";
+
         // Util functions
         public static DateTime UnixSecondsToDateTime(long unixTimeStamp)
         {
@@ -77,7 +79,6 @@ namespace LifestyleCommon
         public double bid;
     }
 
-
     public enum ORDER_COMMAND
     {
         NONE = 0,
@@ -85,5 +86,12 @@ namespace LifestyleCommon
         SELL = 2,
         BUYCLOSE = 3,
         SELLCLOSE = 4
+    }
+
+    public enum CHART_ITEM_TYPE
+    {
+        rate = 0,
+        pnt = 1,
+        ind = 2
     }
 }

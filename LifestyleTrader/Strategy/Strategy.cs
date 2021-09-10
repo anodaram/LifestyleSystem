@@ -10,6 +10,7 @@ namespace LifestyleTrader
 {
     class Strategy
     {
+        private string m_sStrategyID = "";
         private TFEngine m_TFEngine = null;
         private Symbol m_symbol = null;
         private Dictionary<Tuple<string, Pattern>, PersistentOhlc> m_dicPersistentOHLC = new Dictionary<Tuple<string, Pattern>, PersistentOhlc>();
@@ -23,7 +24,8 @@ namespace LifestyleTrader
         public Strategy(Symbol symbol, JObject jStrategy)
         {
             m_symbol = symbol;
-            m_TFEngine = new TFEngine(symbol, Manager.g_symbolConfig.m_lstTF);
+            m_sStrategyID = (string)jStrategy["strategy_id"] + "_" + symbol.m_sSymbol;
+            m_TFEngine = new TFEngine(symbol, Manager.g_symbolConfig.m_lstTF, m_sStrategyID);
             m_jStateFormula = (JArray)jStrategy["state_formula"];
         }
 
