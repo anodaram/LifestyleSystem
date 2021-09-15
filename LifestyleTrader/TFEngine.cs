@@ -14,7 +14,7 @@ namespace LifestyleTrader
         Dictionary<string, TimeFrame> m_dicTF = new Dictionary<string, TimeFrame>();
         double m_dAsk;
         double m_dBid;
-        long m_time;
+        public long m_time;
         Dictionary<string, List<Ohlc>> m_dicOHLC = new Dictionary<string, List<Ohlc>>();
 
         public TFEngine(Symbol symbol, List<TimeFrame> lstTF, string sStrategyID)

@@ -25,7 +25,9 @@ namespace WpfSciStockChart
         };
         List<XyDataSeries<DateTime, double>> pntSeries = new List<XyDataSeries<DateTime, double>>()
         {
-            new XyDataSeries<DateTime, double>() { SeriesName = "Buy" },
+            new XyDataSeries<DateTime, double>() {
+                SeriesName = "Buy"
+            },
             new XyDataSeries<DateTime, double>() { SeriesName = "Sell" },
             new XyDataSeries<DateTime, double>() { SeriesName = "Open" },
             new XyDataSeries<DateTime, double>() { SeriesName = "Close" }
@@ -91,10 +93,14 @@ namespace WpfSciStockChart
             if (bAppend)
             {
                 priceSeries[nIndex].Append(dt, open, high, low, close);
-                if (false && nIndex == 0)
+                if (nIndex == 0)
                 {
-                    for (int i = 0; i < pntSeries.Count; i++) pntSeries[i].Append(dt, double.NaN);
-                    for (int i = 0; i < indSeries.Count; i++) indSeries[i].Append(dt, double.NaN);
+                    try
+                    {
+                        for (int i = 0; i < pntSeries.Count; i++) pntSeries[i].Append(dt, double.NaN);
+                        for (int i = 0; i < indSeries.Count; i++) indSeries[i].Append(dt, double.NaN);
+                    }
+                    catch { }
                 }
                 if (bAutoScroll)
                 {
@@ -114,6 +120,15 @@ namespace WpfSciStockChart
             else
             {
                 priceSeries[nIndex].Update(dt, open, high, low, close);
+                if (nIndex == 0)
+                {
+                    try
+                    {
+                        for (int i = 0; i < pntSeries.Count; i++) pntSeries[i].Update(dt, double.NaN);
+                        for (int i = 0; i < indSeries.Count; i++) indSeries[i].Update(dt, double.NaN);
+                    }
+                    catch { }
+                }
             }
 
             if(nIndex == 0) setBidLineY(close);
@@ -127,12 +142,15 @@ namespace WpfSciStockChart
         public void update_ind(int nId, DateTime dt, double price)
         {
             if (nId >= IND_CNT) return;
-            indSeries[nId].Update(dt, price);
+            indSeries[nId].Append(dt, price);
         }
 
         public void update_pnt(int nId, DateTime dt, double price)
         {
             if (nId >= PNT_CNT) return;
+            int nID = findNearestIndex(ref dt); //priceSeries.FindIndex(dtTime);
+            if (nID < 0)
+                return;
             pntSeries[nId].Update(dt, price);
         }
 
@@ -228,16 +246,33 @@ namespace WpfSciStockChart
         public void ClearRate()
         {
             for (int i = 0; i < PRICE_CNT; i++) priceSeries[i].Clear();
+            for (int i = 0; i < IND_CNT; i++) indSeries[i].Clear();
+            for (int i = 0; i < PNT_CNT; i++) pntSeries[i].Clear();
         }
 
         public void ClearInd()
         {
-            for (int i = 0; i < IND_CNT; i++) indSeries[i].Clear();
+            // for (int i = 0; i < IND_CNT; i++) indSeries[i].Clear();
         }
 
         public void ClearPnt()
         {
-            for (int i = 0; i < PNT_CNT; i++) pntSeries[i].Clear();
+            // for (int i = 0; i < PNT_CNT; i++) pntSeries[i].Clear();
+        }
+
+
+        //BY KHS
+        private int findNearestIndex(ref DateTime dtTime)
+        {
+            for (int i = 0; i < priceSeries[0].Count; i++)
+            {
+                if (priceSeries[0].XValues[i] >= dtTime)
+                {
+                    dtTime = priceSeries[0].XValues[i];
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

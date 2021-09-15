@@ -46,7 +46,7 @@ namespace LifestyleCommon
             return true;
         }
 
-        public void Send(List<string> lstWord)
+        public void Send(List<string> lstWord, bool bMustPublish = false)
         {
             List<string> lstMsg = new List<string>();
             lock (m_cache)
@@ -56,9 +56,10 @@ namespace LifestyleCommon
                 {
                     m_cache.RemoveAt(0);
                 }
-                if (m_bConnect && m_cache.Count >= MULTI_SEND_UNIT)
+                if (m_bConnect && (bMustPublish || m_cache.Count >= MULTI_SEND_UNIT))
                 {
-                    for (int i = 0; i < MULTI_SEND_UNIT; i++)
+                    int nCnt = Math.Min(m_cache.Count, MULTI_SEND_UNIT);
+                    for (int i = 0; i < nCnt; i++)
                     {
                         lstMsg.Add(m_cache[0]);
                         m_cache.RemoveAt(0);

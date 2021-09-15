@@ -19,7 +19,7 @@ namespace LifestyleChart
         JObject m_jConfig = null;
         RabbitMQ m_rmq = null;
         Dictionary<Tuple<string, string>, RateData> m_dataRate = new Dictionary<Tuple<string, string>, RateData>();
-        Dictionary<Tuple<string, string>, IndData> m_dataPnt = new Dictionary<Tuple<string, string>, IndData>();
+        Dictionary<Tuple<string, string>, PntData> m_dataPnt = new Dictionary<Tuple<string, string>, PntData>();
         Dictionary<Tuple<string, string>, IndData> m_dataInd = new Dictionary<Tuple<string, string>, IndData>();
 
         Tuple<string, string> m_activeRateKey = Tuple.Create("", "");
@@ -129,9 +129,9 @@ namespace LifestyleChart
             updateChart();
         }
 
+
         private void onReceiveGroup(string sGroupMsg)
         {
-            Console.WriteLine(sGroupMsg);
             try
             {
                 string[] sWords = sGroupMsg.Split(';');
@@ -142,15 +142,18 @@ namespace LifestyleChart
                     CHART_ITEM_TYPE eType = (CHART_ITEM_TYPE)Enum.Parse(typeof (CHART_ITEM_TYPE), sWords[nID + 1], true);
                     int nLen = 8;
                     if (eType == CHART_ITEM_TYPE.rate) nLen = 8;
-                    else if (eType == CHART_ITEM_TYPE.pnt) nLen = 5;
-                    else if (eType == CHART_ITEM_TYPE.ind) nLen = 5;
+                    else if (eType == CHART_ITEM_TYPE.pnt) nLen = 6;
+                    else if (eType == CHART_ITEM_TYPE.ind) nLen = 6;
                     List<string> tmp = new List<string>();
                     for (int j = nID + 2; j < nID + nLen; j++) tmp.Add(sWords[j]);
                     onReceive(sWords[nID], eType, tmp);
                     nID += nLen;
                 }
             }
-            catch { }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private void onReceive(string sLogicID, CHART_ITEM_TYPE eType, List<string> lstWords)
@@ -203,7 +206,7 @@ namespace LifestyleChart
                 Tuple<string, string> key = Tuple.Create(sLogicID, lstWords[0]);
                 if (!m_dataPnt.ContainsKey(key))
                 {
-                    m_dataPnt[key] = new IndData();
+                    m_dataPnt[key] = new PntData();
                     cmb_pnt.Invoke((MethodInvoker)delegate
                     {
                         lock (cmb_pnt)
@@ -212,27 +215,47 @@ namespace LifestyleChart
                         }
                     });
                 }
-                m_dataPnt[key].Update(long.Parse(lstWords[1]), double.Parse(lstWords[2]));
+                m_dataPnt[key].Update(long.Parse(lstWords[1]), double.Parse(lstWords[2]), lstWords[3]);
             }
         }
 
         private void updateChart()
         {
-            if (!m_dataRate.ContainsKey(m_activeRateKey)) return;
-            try
+            if (m_dataRate.ContainsKey(m_activeRateKey))
             {
-                RateData dataRate = m_dataRate[m_activeRateKey];
-                List<Ohlc> lstUpdate = dataRate.GetUpdateList();
-                DateTime dtLastTime = ucSciStockChart1.getLastTime_price();
-                displayBug(dtLastTime.ToString());
-                foreach (var ohlc in lstUpdate)
+                try
                 {
-                    DateTime dt = Global.UnixSecondsToDateTime(ohlc.time);
-                    ucSciStockChart1.update_price(0, dt > dtLastTime, dt,
-                        ohlc.open, ohlc.high, ohlc.low, ohlc.close);
+                    RateData dataRate = m_dataRate[m_activeRateKey];
+                    List<Ohlc> lstUpdate = dataRate.GetUpdateList();
+                    DateTime dtLastTime = ucSciStockChart1.getLastTime_price();
+                    displayBug(dtLastTime.ToString());
+                    foreach (var ohlc in lstUpdate)
+                    {
+                        DateTime dt = Global.UnixSecondsToDateTime(ohlc.time);
+                        ucSciStockChart1.update_price(0, dt > dtLastTime, dt,
+                            ohlc.open, ohlc.high, ohlc.low, ohlc.close);
+                    }
                 }
+                catch { }
             }
-            catch { }
+            if (m_dataPnt.ContainsKey(m_activePntKey))
+            {
+                try
+                {
+                    PntData dataPnt = m_dataPnt[m_activePntKey];
+                    List<Pnt> lstUpdate = dataPnt.GetUpdateList();
+                    foreach (var pnt in lstUpdate)
+                    {
+                        DateTime dt = Global.UnixSecondsToDateTime(pnt.time);
+                        if (m_activePntKey.Item2 == "SIGNAL")
+                        {
+                            if (pnt.sComment == "BUY" || pnt.sComment == "SELL_CLOSE") ucSciStockChart1.update_pnt(0, dt, pnt.dValue);
+                            else if (pnt.sComment == "SELL" || pnt.sComment == "BUY_CLOSE") ucSciStockChart1.update_pnt(1, dt, pnt.dValue);
+                        }
+                    }
+                }
+                catch { }
+            }
         }
 
         private void displayBug(string sMsg)

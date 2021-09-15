@@ -18,6 +18,7 @@ namespace LifestyleTrader
         private Dictionary<Tuple<string, string>, bool> m_dicStates = new Dictionary<Tuple<string, string>, bool>();
         private List<ORDER_COMMAND> m_lstSignal = new List<ORDER_COMMAND>();
         private JArray m_jStateFormula = null;
+        private JArray m_jInd = null;
         private double ex_dLots = 1.0;
         private Evaluation m_evaluation = new Evaluation();
 
@@ -27,6 +28,11 @@ namespace LifestyleTrader
             m_sStrategyID = (string)jStrategy["strategy_id"] + "_" + symbol.m_sSymbol;
             m_TFEngine = new TFEngine(symbol, Manager.g_symbolConfig.m_lstTF, m_sStrategyID);
             m_jStateFormula = (JArray)jStrategy["state_formula"];
+            m_jInd = (JArray)jStrategy["chart_indicators"];
+            foreach (var ind in m_jInd)
+            {
+                
+            }
         }
 
         public string SymbolEx()
@@ -300,6 +306,10 @@ namespace LifestyleTrader
 
         private double pastRate(string sTF, string sPattern, char c, string sShift)
         {
+            if (sTF == "lots")
+            {
+                return ex_dLots;
+            }
             int nShift = sShift.Length < 1 ? 0 : int.Parse(sShift);
             if (sTF.Length == 0) // added at 2021-06-24
             {
@@ -347,6 +357,16 @@ namespace LifestyleTrader
         {
             Manager.PutLog(string.Format("requestOrder({0},{1},{2},{3})",
                 symbol.m_sSymbol, cmd, dLots, dPrice));
+
+            Manager.g_chart.Send(new List<string>()
+            {
+                m_sStrategyID,
+                "pnt",
+                "SIGNAL",
+                m_TFEngine.m_time.ToString(),
+                dPrice.ToString(),
+                cmd.ToString()
+            }, true);
             bool bRlt = true;
             if (Manager.g_eMode == RUN_MODE.REAL_TRADE)
             {

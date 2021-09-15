@@ -63,6 +63,12 @@ namespace LifestyleCommon
                             close = double.Parse(item["close"])
                         });
                     }
+                    lstRate.Sort(delegate(Ohlc x, Ohlc y)
+                    {
+                        if (x.time < y.time) return -1;
+                        if (x.time > y.time) return 1;
+                        return 0;
+                    });
                 }
             }
             catch (Exception e)
